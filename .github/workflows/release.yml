@@ -113,11 +113,12 @@ jobs:
 
       - name: Package (zip)
         if: ${{ endsWith(matrix.archive, '.zip') }}
+        shell: pwsh
         run: |
-          mkdir dist
-          cp target/${{ matrix.target }}/release/fpm${{ matrix.binary_ext }} dist/
-          cp LICENSE dist/
-          cd dist && zip ../${{ matrix.archive }} fpm${{ matrix.binary_ext }} LICENSE
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/fpm${{ matrix.binary_ext }}" dist/
+          Copy-Item LICENSE dist/
+          Compress-Archive -Path dist/fpm${{ matrix.binary_ext }},dist/LICENSE -DestinationPath ${{ matrix.archive }}
 
       - uses: actions/download-artifact@v4
         with:
